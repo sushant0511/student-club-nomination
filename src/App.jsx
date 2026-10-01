@@ -26,6 +26,7 @@ const positions = [
   "President",
   "Vice-President",
   "Secretary",
+  "Member",
 ];
 
 function App() {
