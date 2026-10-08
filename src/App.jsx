@@ -3,15 +3,39 @@ import "./App.css";
 
 // ======================================================
 // GOOGLE APPS SCRIPT WEB APP URL
-// Replace this with your actual deployed Apps Script URL
 // ======================================================
+// KEEP YOUR EXISTING WORKING GOOGLE APPS SCRIPT URL HERE
+// ======================================================
+
 const GOOGLE_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbz4xKUPJRwQ8bVvebLV9EOdCYLwu2XTGYZL7irD96x6P3oCN26YmG_WnHgc_Erz4llw/exec";
+  "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+
 
 // ======================================================
-// CLUBS
+// ALL CLUBS
 // ======================================================
+
 const clubs = [
+  {
+    name: "Algorithmic Thinking Club",
+    faculty: "Mr. Amit Kumar Updhyay",
+  },
+  {
+    name: "Code and Canvas Club",
+    faculty: "Dr. Puspendra Kumar Rajput",
+  },
+  {
+    name: "National Youth Parliament Club",
+    faculty: "Dr. Shivam Tiwari",
+  },
+  {
+    name: "Open Source Club",
+    faculty: "Dr. Anjum Mohd Aslam",
+  },
+  {
+    name: "Drone Innovation and Implementation Club",
+    faculty: "Dr. K. Meena",
+  },
   {
     name: "NextGen Front-End Club",
     faculty: "Dr. Sushant Jhingran",
@@ -20,197 +44,345 @@ const clubs = [
     name: "API Development & Integration Club",
     faculty: "Mr. Durgesh Narayan Singh",
   },
+  {
+    name: "Visual Arts, Music, Reel and Rhythm Club",
+    faculty: "Dr. Harminder Kaur",
+  },
+  {
+    name: "Cybersecurity, Threat Prevention & Digital Forensics Club",
+    faculty: "Mr. Avinash Kumar",
+  },
 ];
 
-const positions = [
-  "President",
-  "Vice-President",
-  "Secretary",
-  "Member",
-];
+
+// ======================================================
+// APP
+// ======================================================
 
 function App() {
+
   const [form, setForm] = useState({
+
     fullName: "",
     systemId: "",
     mobile: "",
     personalEmail: "",
     universityEmail: "",
+
     course: "",
     branch: "",
     batch: "",
     year: "",
     cgpa: "",
     backlog: "",
+
     club: "",
-    position: "",
+
+    // Member is fixed
+    position: "Member",
+
     motivation: "",
     technicalSkills: "",
     projects: "",
     achievements: "",
     leadershipExperience: "",
+
     declaration: false,
   });
 
+
   const [submitting, setSubmitting] = useState(false);
+
   const [message, setMessage] = useState("");
 
-  // ======================================================
-  // HANDLE FORM INPUT
-  // ======================================================
+
+// ======================================================
+// HANDLE INPUT
+// ======================================================
+
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+
+    const {
+      name,
+      value,
+      type,
+      checked,
+    } = e.target;
+
 
     setForm({
       ...form,
-      [name]: type === "checkbox" ? checked : value,
+
+      [name]:
+        type === "checkbox"
+          ? checked
+          : value,
     });
 
-    // Clear previous message when user changes something
+
+    // Clear previous message
+
     if (message) {
       setMessage("");
     }
   };
 
-  // ======================================================
-  // SUBMIT FORM
-  // ======================================================
+
+// ======================================================
+// SUBMIT FORM
+// ======================================================
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     setMessage("");
 
-    // ------------------------------------------
+
+    // --------------------------------------------------
     // Declaration validation
-    // ------------------------------------------
+    // --------------------------------------------------
+
     if (!form.declaration) {
+
       setMessage(
         "ERROR: Please accept the declaration before submitting."
       );
+
       return;
     }
 
-    // ------------------------------------------
-    // University email validation
-    // ------------------------------------------
-    const universityEmail = form.universityEmail
-      .trim()
-      .toLowerCase();
 
-    if (!universityEmail.endsWith("@ug.sharda.ac.in")) {
+    // --------------------------------------------------
+    // University email validation
+    // --------------------------------------------------
+
+    const universityEmail =
+      form.universityEmail
+        .trim()
+        .toLowerCase();
+
+
+    if (
+      !universityEmail.endsWith(
+        "@ug.sharda.ac.in"
+      )
+    ) {
+
       setMessage(
         "ERROR: Please use your official university email ending with @ug.sharda.ac.in."
       );
+
       return;
     }
 
-    // ------------------------------------------
-    // Mobile validation
-    // ------------------------------------------
-    const mobileRegex = /^[6-9][0-9]{9}$/;
 
-    if (!mobileRegex.test(form.mobile.trim())) {
+    // --------------------------------------------------
+    // Mobile validation
+    // --------------------------------------------------
+
+    const mobileRegex =
+      /^[6-9][0-9]{9}$/;
+
+
+    if (
+      !mobileRegex.test(
+        form.mobile.trim()
+      )
+    ) {
+
       setMessage(
         "ERROR: Please enter a valid 10-digit mobile number."
       );
+
       return;
     }
 
-    // ------------------------------------------
-    // CGPA validation
-    // ------------------------------------------
-    const cgpa = Number(form.cgpa);
 
-    if (cgpa < 0 || cgpa > 10) {
+    // --------------------------------------------------
+    // CGPA validation
+    // --------------------------------------------------
+
+    const cgpa =
+      Number(form.cgpa);
+
+
+    if (
+      Number.isNaN(cgpa) ||
+      cgpa < 0 ||
+      cgpa > 10
+    ) {
+
       setMessage(
         "ERROR: CGPA must be between 0 and 10."
       );
+
       return;
     }
 
-    // ------------------------------------------
-    // Apps Script URL check
-    // ------------------------------------------
+
+    // --------------------------------------------------
+    // Club validation
+    // --------------------------------------------------
+
+    if (!form.club) {
+
+      setMessage(
+        "ERROR: Please select a club."
+      );
+
+      return;
+    }
+
+
+    // --------------------------------------------------
+    // Apps Script URL validation
+    // --------------------------------------------------
+
     if (
       !GOOGLE_SCRIPT_URL ||
       GOOGLE_SCRIPT_URL ===
         "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"
     ) {
+
       setMessage(
         "ERROR: Google Apps Script URL has not been configured."
       );
+
       return;
     }
 
+
+    // --------------------------------------------------
+    // Start submission
+    // --------------------------------------------------
+
     setSubmitting(true);
 
+
     try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify(form),
-      });
 
-      const result = await response.json();
+      const response =
+        await fetch(
+          GOOGLE_SCRIPT_URL,
+          {
+            method: "POST",
 
-      if (result.success) {
-        setMessage(
-          "SUCCESS: Nomination submitted successfully."
+            body: JSON.stringify(
+              form
+            ),
+          }
         );
 
+
+      const result =
+        await response.json();
+
+
+      // ------------------------------------------------
+      // SUCCESS
+      // ------------------------------------------------
+
+      if (result.success) {
+
+        setMessage(
+          "SUCCESS: Club membership registration submitted successfully."
+        );
+
+
         // Reset form
+
         setForm({
+
           fullName: "",
           systemId: "",
           mobile: "",
           personalEmail: "",
           universityEmail: "",
+
           course: "",
           branch: "",
           batch: "",
           year: "",
           cgpa: "",
           backlog: "",
+
           club: "",
-          position: "",
+
+          position: "Member",
+
           motivation: "",
           technicalSkills: "",
           projects: "",
           achievements: "",
           leadershipExperience: "",
+
           declaration: false,
         });
+
+
+        // Scroll to top
 
         window.scrollTo({
           top: 0,
           behavior: "smooth",
         });
+
       } else {
+
         setMessage(
           "ERROR: " +
-            (result.message ||
-              "Unable to submit nomination.")
+            (
+              result.message ||
+              "Unable to submit registration."
+            )
         );
       }
+
+
     } catch (error) {
-      console.error(error);
+
+      console.error(
+        "Submission error:",
+        error
+      );
+
 
       setMessage(
-        "ERROR: Unable to submit the nomination. Please check your internet connection and try again."
+        "ERROR: Unable to submit the registration. Please check your internet connection and try again."
       );
+
     }
+
 
     setSubmitting(false);
   };
 
-  // ======================================================
-  // WEBSITE
-  // ======================================================
+
+// ======================================================
+// FIND SELECTED CLUB
+// ======================================================
+
+  const selectedClub =
+    clubs.find(
+      (club) =>
+        club.name === form.club
+    );
+
+
+// ======================================================
+// UI
+// ======================================================
+
   return (
+
     <div className="page">
+
 
       {/* ==================================================
           HEADER
       ================================================== */}
+
       <header className="header">
 
         <div className="header-content">
@@ -220,7 +392,7 @@ function App() {
           </h1>
 
           <h2>
-            Student Club Office-Bearer Nomination
+            Student Club Membership Registration
           </h2>
 
           <p>
@@ -233,33 +405,50 @@ function App() {
 
 
       {/* ==================================================
-          MAIN CONTENT
+          MAIN
       ================================================== */}
+
       <main className="container">
 
-        {/* INTRODUCTION */}
+
+        {/* ==================================================
+            INTRODUCTION
+        ================================================== */}
+
         <div className="intro">
 
           <h2>
-            Nomination Form
+            Club Membership Form
           </h2>
 
+
           <p>
-            Students interested in serving as Student
-            President, Vice-President, or Secretary of the
-            following Department Clubs are invited to submit
-            their nominations.
+            Students are invited to register as members
+            of the Department of Computer Science &
+            Engineering Clubs according to their
+            interests and areas of development.
           </p>
 
-          {/* CLUB INFORMATION */}
+
+          <p>
+            Students are encouraged to actively
+            participate in club activities, workshops,
+            events, projects, competitions and other
+            activities conducted by the respective Club.
+          </p>
+
+
+          {/* CLUB LIST */}
 
           <div className="club-information">
 
             <h3>
-              Clubs Inviting Nominations
+              Clubs Available for Membership
             </h3>
 
+
             {clubs.map((club) => (
+
               <div
                 className="club-card"
                 key={club.name}
@@ -279,16 +468,22 @@ function App() {
                 </div>
 
               </div>
+
             ))}
 
           </div>
 
 
+          {/* DEADLINE */}
+
           <p className="deadline">
-            Last Date for Nomination:{" "}
+
+            Registration Deadline:{" "}
+
             <strong>
-              4 October 2026
+              15 October 2026
             </strong>
+
           </p>
 
         </div>
@@ -298,7 +493,10 @@ function App() {
             FORM
         ================================================== */}
 
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={handleSubmit}
+        >
+
 
           {/* ==================================================
               SECTION 1
@@ -310,7 +508,9 @@ function App() {
               1. Student Information
             </h3>
 
+
             <div className="grid">
+
 
               {/* FULL NAME */}
 
@@ -410,8 +610,8 @@ function App() {
                 />
 
                 <small>
-                  Only @ug.sharda.ac.in email addresses
-                  are accepted.
+                  Only @ug.sharda.ac.in email
+                  addresses are accepted.
                 </small>
 
               </div>
@@ -582,7 +782,7 @@ function App() {
           <section className="section">
 
             <h3>
-              2. Club & Position
+              2. Club Membership
             </h3>
 
 
@@ -593,6 +793,7 @@ function App() {
               <label>
                 Select Club *
               </label>
+
 
               <select
                 name="club"
@@ -605,15 +806,19 @@ function App() {
                   Select Club
                 </option>
 
-                {clubs.map((club) => (
-                  <option
-                    key={club.name}
-                    value={club.name}
-                  >
-                    {club.name} — Faculty Coordinator:{" "}
-                    {club.faculty}
-                  </option>
-                ))}
+
+                {clubs.map(
+                  (club) => (
+
+                    <option
+                      key={club.name}
+                      value={club.name}
+                    >
+                      {club.name}
+                    </option>
+
+                  )
+                )}
 
               </select>
 
@@ -622,21 +827,18 @@ function App() {
 
             {/* FACULTY COORDINATOR */}
 
-            {form.club && (
+            {selectedClub && (
+
               <div className="faculty-display">
 
                 <strong>
                   Faculty Coordinator:
                 </strong>{" "}
 
-                {
-                  clubs.find(
-                    (club) =>
-                      club.name === form.club
-                  )?.faculty
-                }
+                {selectedClub.faculty}
 
               </div>
+
             )}
 
 
@@ -645,30 +847,15 @@ function App() {
             <div className="field">
 
               <label>
-                Position Applied For *
+                Membership Type
               </label>
 
-              <select
-                name="position"
-                value={form.position}
-                onChange={handleChange}
-                required
-              >
 
-                <option value="">
-                  Select Position
-                </option>
-
-                {positions.map((position) => (
-                  <option
-                    key={position}
-                    value={position}
-                  >
-                    {position}
-                  </option>
-                ))}
-
-              </select>
+              <input
+                type="text"
+                value="Member"
+                readOnly
+              />
 
             </div>
 
@@ -682,7 +869,7 @@ function App() {
           <section className="section">
 
             <h3>
-              3. Technical & Leadership Background
+              3. Interest & Background
             </h3>
 
 
@@ -691,16 +878,17 @@ function App() {
             <div className="field">
 
               <label>
-                Why do you want to apply for this
-                position, and why are you suitable
-                for the position selected? *
+                Why do you want to join the selected
+                Club? *
               </label>
+
 
               <textarea
                 name="motivation"
                 value={form.motivation}
                 onChange={handleChange}
                 rows="6"
+                placeholder="Tell us about your interest in the selected Club and what you would like to learn or contribute."
                 required
               />
 
@@ -712,15 +900,16 @@ function App() {
             <div className="field">
 
               <label>
-                Relevant Technical Skills *
+                Relevant Technical / Other Skills *
               </label>
+
 
               <textarea
                 name="technicalSkills"
                 value={form.technicalSkills}
                 onChange={handleChange}
                 rows="4"
-                placeholder="Programming languages, frameworks, Git/GitHub, tools, technologies, etc."
+                placeholder="Programming languages, frameworks, tools, communication, creative skills, etc."
                 required
               />
 
@@ -732,16 +921,16 @@ function App() {
             <div className="field">
 
               <label>
-                Projects *
+                Projects / Activities
               </label>
+
 
               <textarea
                 name="projects"
                 value={form.projects}
                 onChange={handleChange}
                 rows="4"
-                placeholder="Mention relevant academic or personal projects."
-                required
+                placeholder="Mention relevant academic projects, personal projects, competitions or activities."
               />
 
             </div>
@@ -752,16 +941,16 @@ function App() {
             <div className="field">
 
               <label>
-                Achievements *
+                Achievements
               </label>
+
 
               <textarea
                 name="achievements"
                 value={form.achievements}
                 onChange={handleChange}
                 rows="4"
-                placeholder="Mention relevant technical, academic, coding or other achievements."
-                required
+                placeholder="Mention academic, technical, sports, creative or other achievements."
               />
 
             </div>
@@ -772,16 +961,18 @@ function App() {
             <div className="field">
 
               <label>
-                Leadership Experience *
+                Leadership / Teamwork Experience
               </label>
+
 
               <textarea
                 name="leadershipExperience"
-                value={form.leadershipExperience}
+                value={
+                  form.leadershipExperience
+                }
                 onChange={handleChange}
                 rows="4"
-                placeholder="Mention previous leadership, event coordination, team management or student activities."
-                required
+                placeholder="Mention leadership, event coordination, teamwork or student activity experience."
               />
 
             </div>
@@ -790,8 +981,8 @@ function App() {
 
 
           {/* ==================================================
-              SECTION 4 - DECLARATION
-          ================================================== */}
+              SECTION 4
+        ================================================== */}
 
           <section className="section declaration">
 
@@ -799,25 +990,31 @@ function App() {
               4. Declaration
             </h3>
 
+
             <label className="checkbox">
 
               <input
                 type="checkbox"
                 name="declaration"
-                checked={form.declaration}
-                onChange={handleChange}
+                checked={
+                  form.declaration
+                }
+                onChange={
+                  handleChange
+                }
               />
 
+
               <span>
+
                 I confirm that the information provided
-                in this nomination form is correct. If
-                selected as an office-bearer of the Club,
-                I agree to actively perform the
-                responsibilities assigned to me,
-                participate in Club activities, coordinate
-                with the Faculty Coordinator and fellow
-                office-bearers, and contribute towards
-                building an active student community.
+                in this membership registration form is
+                correct. I agree to actively participate
+                in Club activities, follow the guidance of
+                the Faculty Coordinator and contribute
+                towards building an active and
+                collaborative Club community.
+
               </span>
 
             </label>
@@ -830,20 +1027,26 @@ function App() {
           ================================================== */}
 
           {message && (
+
             <div
               className={
-                message.startsWith("SUCCESS")
+                message.startsWith(
+                  "SUCCESS"
+                )
                   ? "message success"
                   : "message error"
               }
             >
+
               {message}
+
             </div>
+
           )}
 
 
           {/* ==================================================
-              SUBMIT
+              SUBMIT BUTTON
           ================================================== */}
 
           <button
@@ -853,7 +1056,7 @@ function App() {
 
             {submitting
               ? "Submitting..."
-              : "Submit Nomination"}
+              : "Register as Club Member"}
 
           </button>
 
@@ -869,11 +1072,19 @@ function App() {
       <footer>
 
         <div>
-          Department of Computer Science & Engineering
+          Department of Computer Science &
+          Engineering
         </div>
 
+
         <div className="developed-by">
-          Developed by <strong>Dr. Sushant Jhingran</strong>
+
+          Developed by{" "}
+
+          <strong>
+            Dr. Sushant Jhingran
+          </strong>
+
         </div>
 
       </footer>
