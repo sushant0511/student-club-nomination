@@ -50,7 +50,7 @@ const clubs = [
   },
   {
     name: "Cybersecurity, Threat Prevention & Digital Forensics Club",
-    faculty: "Mr. Avinash Kumar",
+    faculty: "Dr. Avinash Kumar",
   },
 ];
 
